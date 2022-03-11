@@ -1,43 +1,19 @@
 'use strict'
-
-const { buildSchema } = require('graphql')
+require('dotenv').config()
+const { makeExecutableSchema } = require('@graphql-tools/schema')
 const express = require('express')
 const { graphqlHTTP } = require('express-graphql')
-
+const { readFileSync } = require('fs')
+const { join } = require('path')
+const resolvers = require('./lib/resolvers')
+const { connectDB } =require('./lib/db') 
 // Begin App
 const app = express()
 const port = process.env.port || 3000
 
 // definiendo el esquema
-const schema = buildSchema(`
-  type Query {
-    hello: String
-    saludo: String
-  }
-`)
-
-// Configurar los resolvers
-const resolvers = {
-  hello: () => {
-    return 'Hola Marrte'
-  },
-  saludo: () => {
-    return 'Hola a Marrte'
-  },
-}
-
-/* Ejecutar el query hello
-graphql({
-  schema: schema,
-  source: '{ saludo }',
-  rootValue: resolvers,
-})
-.then((data) => {
-  console.log(data)
-})
-.catch((e) => {
-  console.log(e)
-})*/
+const typeDefs = readFileSync(join(__dirname, 'lib', 'schema.graphql'), 'utf-8')
+const schema = makeExecutableSchema({ typeDefs, resolvers })
 
 app.use(
   '/api',
@@ -50,4 +26,7 @@ app.use(
 
 app.listen(port, () => {
   console.log(`Server is listening at http://localhost:${port}/api`)
+
+  connectDB
+  console.log()
 })
