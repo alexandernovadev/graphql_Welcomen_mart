@@ -1,0 +1,121 @@
+{
+  AllCourses: getCourses{
+    _id
+    title
+  }
+  
+  Course1: getCourse(id: "5f0c8140c6163a17722314d4"){
+    ...CourseFields
+    teacher
+  }
+  
+    Course2: getCourse(id: "5f0c8152c6163a17722314d5"){
+    ...CourseFields
+    topic
+  }
+}
+
+fragment CourseFields on Course {
+ _id
+  title
+  description
+}
+
+
+
+
+
+
+
+// Variables
+
+mutation AddPersonToCourse($course: ID!, $person: ID!){
+  addPeople(courseID: $course, personID: $person){
+    _id
+    title
+  }
+}
+
+
+{
+  "course": "61664f8ded307fc554c71901",
+  "person": "6168f16a995ad2d4ee462d88"
+}
+
+
+// WIth enmun siga las reglas en OEJTO
+
+mutation CreateNewCourse($createinput: CourseInput!){
+  createCourse(input: $createinput){
+    _id
+    title
+    description
+
+  }
+}
+{
+  "createinput": {
+    "title": "Mi titulo nuevo",
+    "teacher": "Nuevo Profesor",
+    "description": "Curso nuevo",
+    "topic":"programacion",
+    "level": "intermedio"
+  }
+}
+
+
+
+// Wiht directive codictional
+query getPeopleData($monitor: Boolean!, $avatar: Boolean!){
+    getPeople {
+      _id
+      name
+      ... on Monitor @include(if: $monitor) {
+        phone
+      }
+            ... on Student @include(if: $avatar) {
+        avatar
+        email
+      }
+    }
+  }
+
+
+  {
+	"monitor": false,
+	"avatar": true
+}
+
+
+
+
+{
+  searchItems(keyword: "ejemplo"){
+    __typename
+    ... on Course{
+      title
+      description
+    }
+    ... on Monitor {
+      name
+      phone
+    }
+    ... on Student {
+      name
+      email
+    }
+  }
+}
+
+
+{
+  "data": {
+    "searchItems": [
+      {
+        "__typename": "Course",
+        "title": "Curso de ejemplo numero 1",
+        "description": "una descripcion 1"
+      }
+    ]
+  }
+}
